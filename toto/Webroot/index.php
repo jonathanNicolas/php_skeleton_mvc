@@ -13,7 +13,3 @@ include_once '../Config/core.php';
 
 $tmp = new Core();
 $tmp->iniRouter();
-
-$router->addRoute("/(profile)/([0-9]{1,6})", array("profile", "id"));
-$router->addRoute("/(.*)", array("catchall"));
-print_r($router->parse($_SERVER['REQUEST_URI']));
