@@ -1,5 +1,6 @@
 <?php
-class Database{    
+class Database{
+
   private static $instance=null;
   private $pdo;
   public function __construct() {    

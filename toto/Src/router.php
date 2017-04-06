@@ -1,54 +1,33 @@
 <?php
-require_once '/Src/Dispatcher.php';
 
 class Router {
 
-    private $url;
-    private $routes = [];
-    private $namedRoutes = [];
+    private $routes = array();
 
-    public function __construct($url){
-        $this->url = $url;
+    public function addRoute($pattern, $tokens = array()) {
+        $this->routes[] = array(
+            "pattern" => $pattern,
+            "tokens" => $tokens
+        );
     }
 
-    public function get($path, $callable, $name = null){
-        return $this->add($path, $callable, $name, 'GET');
-    }
+    public function parse($url) {
 
-    public function post($path, $callable, $name = null){
-        return $this->add($path, $callable, $name, 'POST');
-    }
-
-    private function add($path, $callable, $name, $method){
-        $route = new Dispatcher($path, $callable);
-        $this->routes[$method][] = $route;
-        if(is_string($callable) && $name === null){
-            $name = $callable;
-        }
-        if($name){
-            $this->namedRoutes[$name] = $route;
-        }
-        return $route;
-    }
-
-    public function run(){
-        if(!isset($this->routes[$_SERVER['REQUEST_METHOD']])){
-            throw new RouterException('REQUEST_METHOD does not exist');
-        }
-        foreach($this->routes[$_SERVER['REQUEST_METHOD']] as $route){
-            if($route->match($this->url)){
-                return $route->call();
+        $tokens = array();
+        foreach ($this->routes as $route) {
+            preg_match("@^" . $route['pattern'] . "$@", $url, $matches);
+            if ($matches) {
+                foreach ($matches as $key=>$match) {
+                    // Not interested in the complete match, just the tokens
+                    if ($key == 0) {
+                        continue;
+                    }
+                    // Save the token
+                    $tokens[$route['tokens'][$key-1]] = $match;
+                }
+                return $tokens;
             }
         }
-        throw new RouterException('No matching routes');
+        return $tokens;
     }
-
-    public function url($name, $params = []){
-        if(!isset($this->namedRoutes[$name])){
-            throw new RouterException('No route matches this name');
-        }
-        return $this->namedRoutes[$name]->getUrl($params);
-    }
-
 }
-?>

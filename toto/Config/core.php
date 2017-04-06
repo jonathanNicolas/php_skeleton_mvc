@@ -1,9 +1,9 @@
 <?php 
-require_once '/Config/db.php';
-require_once 'dispatcher.php';
-require_once '/Src/router.php';
-require_once '/Controllers/UsersController.php';
-require_once '/Controllers/ArticlesController.php';
+require_once 'db.php';
+require_once '../dispatcher.php';
+require_once '../Src/router.php';
+require_once '../Controllers/UsersController.php';
+require_once '../Controllers/ArticlesController.php';
 
 class Core{
 
